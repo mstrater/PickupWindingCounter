@@ -28,11 +28,13 @@
 	<div class="padding">
 		You can also press any button to increment (throttled to no more than one per 3 seconds).
 	</div>
+	<button id="reset">Reset counter</button>
 	<script>
 		let turnIncrementElement = document.querySelector("#turnIncrement");
 		let gearRatioElement = document.querySelector("#gearRatio");
 		let counterElement = document.querySelector("#counter");
 		let incrementElement = document.querySelector("#increment");
+		let resetElement = document.querySelector("#reset");
 		let turnIncrement = 8;
 		let gearRatio = 40/8;
 		let counter = parseInt(localStorage.getItem("numberOfWinds")) || 0;
@@ -75,6 +77,11 @@
 		});
 		gearRatioElement.addEventListener("change", (event) => {
 			gearRatio = eval(gearRatioElement.value);
+		});
+		resetElement.addEventListener("click", (event) => {
+			counter = 0;
+			counterElement.textContent = counter;
+			localStorage.setItem("numberOfWinds", counter);
 		});
 	</script>
 </body>
