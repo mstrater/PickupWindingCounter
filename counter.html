@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Pickup winding counter</title>
+	<style>
+		.padding {
+			padding: 5px;
+		}
+	</style>
+</head>
+<body>
+	<h1>Pickup winding counter</h1>
+	<div class="padding">
+		<label for="turnIncrement">Number of turns to increment</label>
+		<input id="turnIncrement" name="turnIncrement" type="text">
+	</div>
+	<div class="padding">
+		<label for="gearRatio">Gear ratio</label>
+		<input id="gearRatio" name="gearRatio" type="text">
+	</div>
+	<div class="padding">
+		<label for="counter">Number of winds</label>
+		<h2 id="counter" name="counter">0</h2>
+	</div>
+
+	<button id="increment">Increment</button>
+	<div class="padding">
+		You can also press any button to increment (throttled to no more than one per 3 seconds).
+	</div>
+	<script>
+		let turnIncrementElement = document.querySelector("#turnIncrement");
+		let gearRatioElement = document.querySelector("#gearRatio");
+		let counterElement = document.querySelector("#counter");
+		let incrementElement = document.querySelector("#increment");
+		let turnIncrement = 8;
+		let gearRatio = 40/8;
+		let counter = parseInt(localStorage.getItem("numberOfWinds")) || 0;
+		// init values
+		turnIncrementElement.value = turnIncrement;
+		gearRatioElement.value = gearRatio;
+		counterElement.textContent = counter;
+
+		const throttle = (func, limit) => {
+			let inThrottle;
+			return function() {
+				const args = arguments;
+				const context = this;
+				if (!inThrottle) {
+					func.apply(context, args);
+					inThrottle = true;
+					setTimeout(() => inThrottle = false, limit);
+				}
+			};
+		};
+
+		const increment = throttle(() => {
+			counter += (turnIncrement * gearRatio);
+			counterElement.textContent = counter;
+			localStorage.setItem("numberOfWinds", counter);
+		}, 2000);
+
+		document.addEventListener("keydown", (event) => {
+			const keyName = event.key;
+			if (keyName === " ") {
+				// spacebar
+				increment();
+			}
+		});
+		incrementElement.addEventListener("click", (event) => {
+			increment();
+		});
+		turnIncrementElement.addEventListener("change", (event) => {
+			turnIncrement = parseInt(turnIncrementElement.value);
+		});
+		gearRatioElement.addEventListener("change", (event) => {
+			gearRatio = eval(gearRatioElement.value);
+		});
+	</script>
+</body>
+</html>
